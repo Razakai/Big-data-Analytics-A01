@@ -24,6 +24,9 @@ import os
 import codecs
 import sys
 import bisect
+import pandas as pd
+from glob import glob
+
 
 # ------------------------------------------
 # FUNCTION process_line
@@ -35,22 +38,24 @@ def process_line(line):
     # 2. We get the parameter list from the line
     params_list = line.strip().split(",")
 
-    #(00) start_time => A String representing the time the trip started at <%d/%m/%Y %H:%M:%S>. Example: “2019/05/02 10:05:00”
-    #(01) stop_time => A String representing the time the trip finished at <%d/%m/%Y %H:%M:%S>. Example: “2019/05/02 10:10:00”
-    #(02) trip_duration => An Integer representing the duration of the trip. Example: 300
-    #(03) start_station_id => An Integer representing the ID of the CityBike station the trip started from. Example: 150
-    #(04) start_station_name => A String representing the name of the CitiBike station the trip started from. Example: “E 2 St &; Avenue C”.
-    #(05) start_station_latitude => A Float representing the latitude of the CitiBike station the trip started from. Example: 40.7208736
-    #(06) start_station_longitude => A Float representing the longitude of the CitiBike station the trip started from. Example:  -73.98085795
-    #(07) stop_station_id => An Integer representing the ID of the CityBike station the trip stopped at. Example: 150
-    #(08) stop_station_name => A String representing the name of the CitiBike station the trip stopped at. Example: “E 2 St &; Avenue C”.
-    #(09) stop_station_latitude => A Float representing the latitude of the CitiBike station the trip stopped at. Example: 40.7208736
-    #(10) stop_station_longitude => A Float representing the longitude of the CitiBike station the trip stopped at. Example:  -73.98085795
-    #(11) bike_id => An Integer representing the id of the bike used in the trip. Example:  33882
-    #(12) user_type => A String representing the type of user using the bike (it can be either “Subscriber” or “Customer”). Example: “Subscriber”.
-    #(13) birth_year => An Integer representing the birth year of the user using the bike. Example:  1990
-    #(14) gender => An Integer representing the gender of the user using the bike (it can be either 0 => Unknown; 1 => male; 2 => female). Example:  2.
-    #(15) trip_id => An Integer representing the id of the trip. Example:  190
+    # (00) start_time => A String representing the time the trip started at <%d/%m/%Y %H:%M:%S>. Example: “2019/05/02
+    # 10:05:00” (01) stop_time => A String representing the time the trip finished at <%d/%m/%Y %H:%M:%S>. Example:
+    # “2019/05/02 10:10:00” (02) trip_duration => An Integer representing the duration of the trip. Example: 300 (03)
+    # start_station_id => An Integer representing the ID of the CityBike station the trip started from. Example: 150
+    # (04) start_station_name => A String representing the name of the CitiBike station the trip started from.
+    # Example: “E 2 St &; Avenue C”. (05) start_station_latitude => A Float representing the latitude of the CitiBike
+    # station the trip started from. Example: 40.7208736 (06) start_station_longitude => A Float representing the
+    # longitude of the CitiBike station the trip started from. Example:  -73.98085795 (07) stop_station_id => An
+    # Integer representing the ID of the CityBike station the trip stopped at. Example: 150 (08) stop_station_name =>
+    # A String representing the name of the CitiBike station the trip stopped at. Example: “E 2 St &; Avenue C”. (09)
+    # stop_station_latitude => A Float representing the latitude of the CitiBike station the trip stopped at.
+    # Example: 40.7208736 (10) stop_station_longitude => A Float representing the longitude of the CitiBike station
+    # the trip stopped at. Example:  -73.98085795 (11) bike_id => An Integer representing the id of the bike used in
+    # the trip. Example:  33882 (12) user_type => A String representing the type of user using the bike (it can be
+    # either “Subscriber” or “Customer”). Example: “Subscriber”. (13) birth_year => An Integer representing the birth
+    # year of the user using the bike. Example:  1990 (14) gender => An Integer representing the gender of the user
+    # using the bike (it can be either 0 => Unknown; 1 => male; 2 => female). Example:  2. (15) trip_id => An Integer
+    # representing the id of the trip. Example:  190
 
     # 3. If the list contains the right amount of parameters
     if (len(params_list) == 16):
@@ -73,11 +78,38 @@ def process_line(line):
     # 4. We return res
     return res
 
+
 # ------------------------------------------
 # FUNCTION my_main
 # ------------------------------------------
+
+# track start and end points. If the starting point doesnt match with previous ending point get time difference
+
 def my_main(input_folder, output_file, bike_id):
-    pass
+    ls = sorted(list(glob(input_folder + "/*.csv")))
+
+    res = []
+    prev = None
+
+    for file in ls:
+        data = pd.read_csv(file, header=None)
+        filteredData = data.loc[data[11] == bike_id]
+
+        for line in filteredData.values:
+            arr = [str(val) for val in line]
+            processedLine = process_line(','.join(arr))
+
+            if prev is None:
+                prev = processedLine
+            else:
+                if prev[7] != processedLine[3]:
+                    res.append([prev[1], prev[8], processedLine[0], processedLine[4]])
+                prev = processedLine
+
+    f = codecs.open(output_file, 'w', 'utf-8')
+    for value in res:
+        f.write("By_Truck" + "\t" + '(' + ', '.join(value) + ')' + '\n')
+
 
 # ---------------------------------------------------------------
 #           PYTHON EXECUTION
