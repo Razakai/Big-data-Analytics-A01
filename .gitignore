@@ -1,0 +1,6 @@
+venv
+__pycache__
+.idea
+A01.pdf
+A01.zip
+.DS_Store
