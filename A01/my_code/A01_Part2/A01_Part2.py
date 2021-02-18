@@ -23,6 +23,8 @@
 import os
 import codecs
 import sys
+import pandas as pd
+from glob import glob
 
 # ------------------------------------------
 # FUNCTION process_line
@@ -75,8 +77,37 @@ def process_line(line):
 # ------------------------------------------
 # FUNCTION my_main
 # ------------------------------------------
+
+# i need dict with keys being bike id's, value being [total duration time, number of trips]
+
 def my_main(input_folder, output_file, top_n_bikes):
-    pass
+    ls = list(glob(input_folder + "/*.csv"))
+
+    res = {}
+
+    for file in ls:
+        data = pd.read_csv(file, header=None)
+
+        for line in data.values:
+            arr = [str(val) for val in line]
+            processedLine = process_line(','.join(arr))
+
+            if processedLine[11] in res.keys():
+                res[processedLine[11]][0] += processedLine[2]
+                res[processedLine[11]][1] += 1
+            else:
+                res[processedLine[11]] = [processedLine[2], 1]
+
+    res = dict(sorted(res.items(), key=lambda item: item[1][0], reverse=True))
+
+    f = codecs.open(output_file, 'w', 'utf-8')
+    i = 0
+    for key, value in res.items():
+        if i < top_n_bikes:
+            f.write(str(key) + "\t" + str(tuple(value)) + '\n')
+        else:
+            break
+        i += 1
 
 # ---------------------------------------------------------------
 #           PYTHON EXECUTION
