@@ -102,6 +102,7 @@ def my_main(input_folder, output_file):
                 res[processedLine[8]] = [0, 1]
 
     res = dict(sorted(res.items()))
+
     f = codecs.open(output_file, 'w', 'utf-8')
     for key, value in res.items():
         f.write(key + "\t" + str(tuple(value)) + '\n')

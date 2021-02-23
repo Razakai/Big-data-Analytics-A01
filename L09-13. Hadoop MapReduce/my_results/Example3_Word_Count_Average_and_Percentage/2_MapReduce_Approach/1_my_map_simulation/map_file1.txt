@@ -1,0 +1,5 @@
+universal	(t, 1, 3)
+universal	(q, 1, 5)
+universal	(b, 1, 5)
+universal	(f, 1, 3)
+universal	(Total, 4, 0)

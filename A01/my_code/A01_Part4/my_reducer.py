@@ -23,11 +23,33 @@
 import sys
 import codecs
 
+
+def processLine(line):
+    step1 = line.split('\t')
+    step2 = step1[1].split(',')
+    step3 = int(step2[0].split('(')[1])
+    step4 = int(step2[1].split(')')[0])
+    return step1[0], step3, step4
+
 # ------------------------------------------
 # FUNCTION my_reduce
 # ------------------------------------------
 def my_reduce(my_input_stream, my_output_stream, my_reducer_input_parameters):
-    pass
+    res = {}
+
+    for line in my_input_stream:
+        station, numStart, numEnd = processLine(line)
+
+        if station in res:
+            res[station][0] += numStart
+            res[station][1] += numEnd
+
+        else:
+            res[station] = [numStart, numEnd]
+
+    for key, value in res.items():
+        my_output_stream.write(key + "\t" + str(tuple(value)) + '\n')
+
 
 # ---------------------------------------------------------------
 #           PYTHON EXECUTION

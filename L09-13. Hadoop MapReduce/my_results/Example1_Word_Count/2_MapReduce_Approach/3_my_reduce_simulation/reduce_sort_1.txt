@@ -1,0 +1,5 @@
+ate	(1)
+brown	(2)
+cow	(1)
+fox	(2)
+how	(1)

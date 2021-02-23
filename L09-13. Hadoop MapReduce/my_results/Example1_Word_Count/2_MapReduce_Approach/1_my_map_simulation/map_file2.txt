@@ -1,0 +1,4 @@
+the	(2)
+fox	(1)
+ate	(1)
+mouse	(1)
