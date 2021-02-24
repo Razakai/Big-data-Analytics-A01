@@ -28,8 +28,11 @@ def processLine(line):
     step1 = line.split('\t')
     step2 = step1[1].split(',')
     step3 = int(step2[0].split('(')[1])
-    step4 = int(step2[1].split(')')[0])
-    return step1[0], step3, step4
+    step4 = int(step2[1])
+    step5 = int(step2[2].split(')')[0])
+
+    return step3, step4, step5
+
 
 # ------------------------------------------
 # FUNCTION my_reduce
@@ -55,6 +58,7 @@ def my_reduce(my_input_stream, my_output_stream, my_reducer_input_parameters):
         else:
             break
         i += 1
+
 
 # ---------------------------------------------------------------
 #           PYTHON EXECUTION
@@ -85,7 +89,7 @@ if __name__ == '__main__':
 
     # 4. my_reducer.py input parameters
     my_reducer_input_parameters = []
-    my_reducer_input_parameters.append( top_n_bikes )
+    my_reducer_input_parameters.append(top_n_bikes)
 
     # 5. We call to my_main
     my_map(my_input_stream, my_output_stream, my_reducer_input_parameters)

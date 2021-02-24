@@ -83,13 +83,14 @@ def my_map(my_input_stream, my_output_stream, my_mapper_input_parameters):
         processedLine = process_line(line)
 
         if processedLine[11] in res.keys():
-            res[processedLine[11]][0] += processedLine[2]
-            res[processedLine[11]][1] += 1
+            res[processedLine[11]][1] += processedLine[2]
+            res[processedLine[11]][2] += 1
         else:
-            res[processedLine[11]] = [processedLine[2], 1]
+            res[processedLine[11]] = [processedLine[11], processedLine[2], 1]
 
     for key, value in res.items():
-        my_output_stream.write(str(key) + "\t" + str(tuple(value)) + '\n')
+        #my_output_stream.write(str(key) + "\t" + str(tuple(value)) + '\n')
+        my_output_stream.write('universal' + "\t" + str(tuple(value)) + '\n')
 
 
 # ---------------------------------------------------------------
