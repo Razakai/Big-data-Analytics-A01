@@ -23,11 +23,62 @@
 import sys
 import codecs
 
+
+def processLine(line):
+    step1 = line.split('\t')
+    step2 = step1[1].split('@')
+    totalTrips = int(len(step2) / 4)
+    res = []
+
+    for trip in range(totalTrips):
+        currentTrip = []
+        for num in range(4):
+            if num == 0:
+                if trip == 0:
+                    currentTrip.append(step2[0].split('(')[1].strip())
+                else:
+                    currentTrip.append(step2[(4 * trip)].strip())
+            elif num == 3:
+                currentTrip.append(step2[(4 * trip) + 3].split(')')[0].strip())
+            else:
+                currentTrip.append(step2[(4 * trip) + num].strip())
+        res.append(currentTrip)
+    return res
+
+
+'''
+0 - start time
+1 - end time
+2 - start location
+3 - end location
+'''
+
+
 # ------------------------------------------
 # FUNCTION my_reduce
 # ------------------------------------------
 def my_reduce(my_input_stream, my_output_stream, my_reducer_input_parameters):
-    pass
+    res = []
+    currentEnd = ""
+
+    for line in my_input_stream:
+        journeyArr = processLine(line)
+
+        for journey in journeyArr:
+            if currentEnd == "":
+                currentEnd = journey
+            else:
+                if currentEnd[3] != journey[2]:
+                    res.append([currentEnd[1], currentEnd[3], journey[0], journey[2]])
+
+                currentEnd = journey
+    print(res)
+    for value in res:
+        my_output_stream.write("By_Truck" + "\t" + '(' + ', '.join(value) + ')' + '\n')
+
+
+
+
 
 # ---------------------------------------------------------------
 #           PYTHON EXECUTION
